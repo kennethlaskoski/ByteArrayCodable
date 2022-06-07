@@ -3,22 +3,22 @@
 import PackageDescription
 
 let package = Package(
-  name: "BinaryCodec",
+  name: "BinaryCodable",
   products: [
     .library(
-      name: "BinaryCodec",
-      targets: ["BinaryCodec"]
+      name: "BinaryCodable",
+      targets: ["BinaryCodable"]
     ),
   ],
   dependencies: [],
   targets: [
     .target(
-      name: "BinaryCodec",
+      name: "BinaryCodable",
       dependencies: []
     ),
     .testTarget(
-      name: "BinaryCodecTests",
-      dependencies: ["BinaryCodec"]
+      name: "BinaryCodableTests",
+      dependencies: ["BinaryCodable"]
     ),
   ]
 )

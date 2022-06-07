@@ -1,11 +1,11 @@
 import XCTest
-@testable import BinaryCodec
+@testable import BinaryCodable
 
-final class BinaryCodecTests: XCTestCase {
+final class BinaryCodableTests: XCTestCase {
     func testExample() throws {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
-        XCTAssertEqual(BinaryCodec().text, "Hello, World!")
+        XCTAssertEqual(BinaryCodable().text, "Hello, World!")
     }
 }
