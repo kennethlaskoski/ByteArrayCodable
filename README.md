@@ -1,3 +1,3 @@
-# BinaryCodec
+# BinaryCodable
 
-A description of this package.
+Swift Codable for binary representions.
