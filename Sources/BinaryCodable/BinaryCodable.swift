@@ -1,6 +1,5 @@
-public struct BinaryCodable {
-    public private(set) var text = "Hello, World!"
+//  Copyright Kenneth Laskoski. All Rights Reserved.
+//  SPDX-License-Identifier: MIT
 
-    public init() {
-    }
-}
+public typealias Unit = UInt8
+public typealias Code = [Unit]
