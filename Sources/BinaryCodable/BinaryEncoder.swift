@@ -22,8 +22,14 @@ public class BinaryEncoder: Encoder {
 }
 
 extension BinaryEncoder: SingleValueEncodingContainer {
-  public func encodeNil() {
-    buffer.append(1)
+  public func encodeNil() throws {
+    throw EncodingError.invalidValue(
+      Any.self,
+      .init(
+        codingPath: codingPath,
+        debugDescription: "Encoding nil not implemented."
+      )
+    )
   }
 
   public func encode(_ value: Bool) {
