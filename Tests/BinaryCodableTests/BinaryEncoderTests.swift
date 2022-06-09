@@ -395,16 +395,55 @@ final class BinaryEncoderTests: XCTestCase {
     XCTAssertEqual(encoder.data, expected)
   }
 
-  func testEncodable() throws {
-    struct TMP: Encodable {
-      let x = 0
-      let y = 1
+  func testRawRepresentable() throws {
+    enum SomeRawEnum: Int, Encodable {
+      case x
+      case y
     }
-    let tmp = TMP()
 
-    XCTExpectFailure()
-    try encoder.encode(tmp)
-    expected.append(contentsOf: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1])
+    try encoder.encode(SomeRawEnum.x)
+    expected.append(contentsOf: [0,0,0,0,0,0,0,0])
+    XCTAssertEqual(encoder.data, expected)
+
+    try encoder.encode(SomeRawEnum.y)
+    expected.append(contentsOf: [0,0,0,0,0,0,0,1])
     XCTAssertEqual(encoder.data, expected)
   }
+
+  func testRawRepresentableMethod() throws {
+    enum SomeRawEnum: Int, Encodable {
+      case x
+      case y
+    }
+
+    try SomeRawEnum.x.encode(to: encoder)
+    expected.append(contentsOf: [0,0,0,0,0,0,0,0])
+    XCTAssertEqual(encoder.data, expected)
+
+    try SomeRawEnum.y.encode(to: encoder)
+    expected.append(contentsOf: [0,0,0,0,0,0,0,1])
+    XCTAssertEqual(encoder.data, expected)
+  }
+
+//  func testsEnum throws {
+//    enum SomeEnum: Codable {
+//      case x
+//      case y
+//    }
+//
+//    try encoder.encode(someEnum.x)
+//  }
+
+//  func testStruct() throws {
+//    struct SomeStruct: Encodable {
+//      let x = 0
+//      let y = 1
+//    }
+//    let someStruct = SomeStruct()
+//
+//    XCTExpectFailure()
+//    try encoder.encode(someStruct)
+//    expected.append(contentsOf: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1])
+//    XCTAssertEqual(encoder.data, expected)
+//  }
 }

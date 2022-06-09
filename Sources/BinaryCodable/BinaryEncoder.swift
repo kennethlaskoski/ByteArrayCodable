@@ -55,14 +55,6 @@ extension BinaryEncoder: SingleValueEncodingContainer {
   }
 
   public func encode<T>(_ value: T) throws where T : Encodable {
-    throw EncodingError.invalidValue(
-      value,
-      .init(
-        codingPath: codingPath,
-        debugDescription: "Encoding Encodable not implemented."
-      )
-    )
-    // TODO:
-    // try value.encode(to: self)
+    try value.encode(to: self)
   }
 }
