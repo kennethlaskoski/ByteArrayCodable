@@ -18,8 +18,16 @@ final class BinaryEncoderTests: XCTestCase {
   }
 
   func testNil() throws {
-    XCTExpectFailure()
-    try encoder.encodeNil()
+    let null: Int? = nil
+    try encoder.encode(null)
+    expected.append(contentsOf: [0x3f,0x21,0xff])
+    XCTAssertEqual(encoder.data, expected)
+  }
+
+  func testNilMethod() throws {
+    let null: Int? = nil
+    try null.encode(to: encoder)
+    expected.append(contentsOf: [0x3f,0x21,0xff])
     XCTAssertEqual(encoder.data, expected)
   }
 
