@@ -37,7 +37,7 @@ extension BinaryEncoder: SingleValueEncodingContainer {
   }
 
   public func encode(_ value: String) {
-    value.utf8CString.forEach { buffer.append(UInt8($0)) }
+    value.utf8CString.forEach { encode($0) }
   }
 
   public func encode(_ value: Double) {
@@ -55,6 +55,14 @@ extension BinaryEncoder: SingleValueEncodingContainer {
   }
 
   public func encode<T>(_ value: T) throws where T : Encodable {
-    try value.encode(to: self)
+    throw EncodingError.invalidValue(
+      value,
+      .init(
+        codingPath: codingPath,
+        debugDescription: "Encoding Encodable not implemented."
+      )
+    )
+    // TODO:
+    // try value.encode(to: self)
   }
 }

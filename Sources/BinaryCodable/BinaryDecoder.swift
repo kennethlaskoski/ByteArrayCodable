@@ -12,11 +12,11 @@ public class BinaryDecoder: Decoder {
     fatalError("Keyed container not implemented.")
   }
 
-  public func unkeyedContainer() -> UnkeyedDecodingContainer {
+  public func unkeyedContainer() throws -> UnkeyedDecodingContainer {
     fatalError("Unkeyed container not implemented.")
   }
 
-  public func singleValueContainer() -> SingleValueDecodingContainer {
+  public func singleValueContainer() throws -> SingleValueDecodingContainer {
     self
   }
 }
