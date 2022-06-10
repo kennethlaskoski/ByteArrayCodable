@@ -48,38 +48,3 @@ extension BinaryEncoder {
     case singleValue(SingleValueContainer)
   }
 }
-
-extension BinaryEncoder {
-  struct Worker {
-    private var buffer: [UInt8] = []
-
-    var data: [UInt8] { buffer }
-
-    mutating func encodeNil() {
-      buffer.append(contentsOf: [0x3F, 0x21, 0xFF])
-    }
-
-    mutating func encode(_ value: Bool) {
-      buffer.append(value ? 1 : 0)
-    }
-
-    mutating func encode<T>(_ value: T) where T: Encodable, T: FixedWidthInteger {
-      withUnsafeBytes(of: value.bigEndian) {
-        buffer.append(contentsOf: $0)
-      }
-    }
-
-    mutating func encode(_ value: String) {
-      value.utf8CString.forEach { encode($0) }
-    }
-
-    mutating func encode(_ value: Double) {
-      encode(value.bitPattern)
-    }
-
-    mutating func encode(_ value: Float) {
-      encode(value.bitPattern)
-    }
-  }
-}
-

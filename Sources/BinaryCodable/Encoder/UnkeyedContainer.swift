@@ -28,8 +28,8 @@ extension BinaryEncoder {
 
     var data: [UInt8] { worker.data }
 
-    public func encodeNil() {
-      worker.encodeNil()
+    public func encodeNil() throws {
+      try worker.encodeNil()
       count += 1
     }
 

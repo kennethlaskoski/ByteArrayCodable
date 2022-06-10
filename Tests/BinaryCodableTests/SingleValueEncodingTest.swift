@@ -17,12 +17,22 @@ final class SingleValueEncodingTest: XCTestCase {
     XCTAssertEqual(encoder.flatData, expected)
   }
 
-  func testCreateEmpty() {}
+  func testEmpty() {}
 
   func testNil() throws {
     let null: Int? = nil
-    try null.encode(to: encoder)
-    expected.append(contentsOf: [0x3f,0x21,0xff])
+    XCTAssertThrowsError(try null.encode(to: encoder))
+
+    do {
+      try null.encode(to: encoder)
+    } catch let error as EncodingError {
+      if case let .invalidValue(value, context) = error {
+        XCTAssert(value as? Any.Type == Any.self)
+        XCTAssert(context.codingPath.isEmpty)
+        XCTAssert(context.debugDescription == "Sorry, this encoder does not encode nil")
+        XCTAssert(context.underlyingError == nil)
+      }
+    }
   }
 
   func testBool() throws {
