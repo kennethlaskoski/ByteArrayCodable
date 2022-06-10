@@ -13,9 +13,12 @@ public final class BinaryEncoder: Encoder {
       case .unkeyed(let unkeyed):
         let singleValue = SingleValueContainer(encoder: self, codingPath: [])
         singleValue.encode(unkeyed.count)
+
         var result = singleValue.data
         result.append(contentsOf: unkeyed.data)
+
         return result
+
       case .singleValue(let singleValue):
         return singleValue.data
       }

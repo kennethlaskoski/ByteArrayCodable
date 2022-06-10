@@ -33,31 +33,6 @@ extension BinaryEncoder {
       count += 1
     }
 
-    public func encode(_ value: Bool) {
-      worker.encode(value)
-      count += 1
-    }
-
-    public func encode<T>(_ value: T) where T: Encodable, T: FixedWidthInteger {
-      worker.encode(value)
-      count += 1
-    }
-
-    public func encode(_ value: String) {
-      worker.encodeNil()
-      count += 1
-    }
-
-    public func encode(_ value: Double) {
-      worker.encodeNil()
-      count += 1
-    }
-
-    public func encode(_ value: Float) {
-      worker.encodeNil()
-      count += 1
-    }
-
     public func encode<T>(_ value: T) throws where T : Encodable {
       try value.encode(to: encoder)
       count += 1
