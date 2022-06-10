@@ -2,8 +2,8 @@
 //  SPDX-License-Identifier: MIT
 
 public class BinaryDecoder: Decoder {
-  private var buffer: Code = []
-  public var data: Code { buffer }
+  private var buffer: [UInt8] = []
+  public var data: [UInt8] { buffer }
 
   public var codingPath: [CodingKey] = []
   public var userInfo: [CodingUserInfoKey : Any] = [:]
