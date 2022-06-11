@@ -14,7 +14,7 @@ final class UnkeyedEncodingTest: XCTestCase {
   }
 
   override func tearDown() {
-    XCTAssertEqual(encoder.flatData, expected)
+    XCTAssertEqual(encoder.data, expected)
   }
 
   func testEmpty() throws {
@@ -24,6 +24,10 @@ final class UnkeyedEncodingTest: XCTestCase {
   }
 
   func testNil() throws {
+    var container = encoder.unkeyedContainer()
+    XCTAssertThrowsError(try container.encodeNil())
+    expected.append(contentsOf: [0,0,0,0,0,0,0,0])
+
     let array: [Int?] = [nil, -1, 0, 1, nil]
     XCTAssertThrowsError(try array.encode(to: encoder))
     expected.append(contentsOf: [0,0,0,0,0,0,0,0])

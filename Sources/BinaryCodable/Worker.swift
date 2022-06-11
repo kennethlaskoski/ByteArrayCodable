@@ -1,39 +1,37 @@
 //  Copyright Kenneth Laskoski. All Rights Reserved.
 //  SPDX-License-Identifier: MIT
 
-struct Worker {
-  private var buffer: [UInt8] = []
-  var data: [UInt8] { buffer }
-
-  func encodeNil() throws {
-    throw EncodingError.invalidValue(
-      Any.self,
-      .init(
-        codingPath: [],
-        debugDescription: "Sorry, this encoder does not encode nil"
-      )
-    )
+struct EncodingWorker {
+  func encode(_ value: Bool) -> [UInt8] {
+    [value ? 1 : 0]
   }
 
-  mutating func encode(_ value: Bool) {
-    buffer.append(value ? 1 : 0)
+  func encode<T>(_ value: T) -> [UInt8]
+  where T: Encodable, T: FixedWidthInteger
+  {
+    withUnsafeBytes(of: value.bigEndian) { $0.map { $0 } }
   }
 
-  mutating func encode<T>(_ value: T) where T: Encodable, T: FixedWidthInteger {
-    withUnsafeBytes(of: value.bigEndian) {
-      buffer.append(contentsOf: $0)
-    }
+  func encode(_ value: String) -> [UInt8] {
+    value.utf8CString.flatMap { encode($0) }
+  }
+}
+
+struct DecodingWorker {
+  func decode(_ type: Bool.Type, cursor: UnsafeRawPointer)
+  throws -> Bool
+  {
+    cursor.load(as: UInt8.self) == 1
   }
 
-  mutating func encode(_ value: String) {
-    value.utf8CString.forEach { encode($0) }
+  func decode<T>(_ type: T.Type, cursor: UnsafeRawPointer)
+  throws -> T
+  where T: Decodable, T: FixedWidthInteger
+  {
+    T(bigEndian: cursor.load(as: T.self))
   }
 
-  mutating func encode(_ value: Double) {
-    encode(value.bitPattern)
-  }
-
-  mutating func encode(_ value: Float) {
-    encode(value.bitPattern)
-  }
+//  func encode(_ value: String) -> [UInt8] {
+//    value.utf8CString.flatMap { encode($0) }
+//  }
 }

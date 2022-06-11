@@ -14,7 +14,7 @@ final class SingleValueEncodingTest: XCTestCase {
   }
 
   override func tearDown() {
-    XCTAssertEqual(encoder.flatData, expected)
+    XCTAssertEqual(encoder.data, expected)
   }
 
   func testEmpty() {}
@@ -27,7 +27,7 @@ final class SingleValueEncodingTest: XCTestCase {
       try null.encode(to: encoder)
     } catch let error as EncodingError {
       if case let .invalidValue(value, context) = error {
-        XCTAssert(value as? Any.Type == Any.self)
+        XCTAssert((value as! Any.Type) == Any.self)
         XCTAssert(context.codingPath.isEmpty)
         XCTAssert(context.debugDescription == "Sorry, this encoder does not encode nil")
         XCTAssert(context.underlyingError == nil)
