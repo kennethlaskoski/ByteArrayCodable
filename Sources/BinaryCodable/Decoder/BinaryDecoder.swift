@@ -25,3 +25,20 @@ public class BinaryDecoder: Decoder {
     return newContainer
   }
 }
+
+extension BinaryDecoder {
+  struct DecodingWorker {
+    func decode(_ type: Bool.Type, cursor: UnsafeRawPointer)
+    throws -> Bool
+    {
+      cursor.load(as: UInt8.self) == 1
+    }
+
+    func decode<T>(_ type: T.Type, cursor: UnsafeRawPointer)
+    throws -> T
+    where T: Decodable, T: FixedWidthInteger
+    {
+      T(bigEndian: cursor.load(as: T.self))
+    }
+  }
+}

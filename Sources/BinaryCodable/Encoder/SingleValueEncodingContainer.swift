@@ -2,25 +2,26 @@
 //  SPDX-License-Identifier: MIT
 
 extension BinaryEncoder {
-  final class SingleValueContainer: SingleValueEncodingContainer {
+  final class SingleValueContainer: EncodingContainer, SingleValueEncodingContainer {
     private let encoder: BinaryEncoder
-    private let worker = EncodingWorker()
+    private let worker = Worker()
     private var buffer: [UInt8] = []
 
     var data: [UInt8] { buffer }
 
     init(encoder: BinaryEncoder) {
       self.encoder = encoder
+      codingPath = encoder.codingPath
     }
 
 // MARK: - Encoding functions
 
     func encodeNil() throws {
       throw EncodingError.invalidValue(
-        Any.self,
+        UInt8?.none as Any,
         .init(
           codingPath: codingPath,
-          debugDescription: "Sorry, this encoder does not encode nil"
+          debugDescription: "Encoding nil is not supported."
         )
       )
     }
@@ -58,6 +59,6 @@ extension BinaryEncoder {
 
 // MARK: - Protocol implementation
 
-    var codingPath: [CodingKey] { [] }
+    var codingPath: [CodingKey]
   }
 }

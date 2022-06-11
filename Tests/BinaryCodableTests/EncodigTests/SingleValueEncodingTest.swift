@@ -17,20 +17,21 @@ final class SingleValueEncodingTest: XCTestCase {
     XCTAssertEqual(encoder.data, expected)
   }
 
-  func testEmpty() {}
+  func testEmptyOnInit() {}
 
   func testNil() throws {
-    let null: Int? = nil
-    XCTAssertThrowsError(try null.encode(to: encoder))
+    let nilValue: Int? = nil
+    XCTAssertThrowsError(try nilValue.encode(to: encoder))
 
     do {
-      try null.encode(to: encoder)
+      try nilValue.encode(to: encoder)
     } catch let error as EncodingError {
       if case let .invalidValue(value, context) = error {
-        XCTAssert((value as! Any.Type) == Any.self)
-        XCTAssert(context.codingPath.isEmpty)
-        XCTAssert(context.debugDescription == "Sorry, this encoder does not encode nil")
-        XCTAssert(context.underlyingError == nil)
+        XCTAssert(value is UInt8?)
+        XCTAssertNil(value as! UInt8?)
+        XCTAssertEqual(context.codingPath.map(\.debugDescription), encoder.codingPath.map(\.debugDescription))
+        XCTAssertEqual(context.debugDescription, "Encoding nil is not supported.")
+        XCTAssertNil(context.underlyingError)
       }
     }
   }

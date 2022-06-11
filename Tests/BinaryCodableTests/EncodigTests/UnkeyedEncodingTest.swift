@@ -40,8 +40,8 @@ final class UnkeyedEncodingTest: XCTestCase {
       0,0,0,0,0,0,0,1,
     ])
 
-    let dropped = Array(array.dropFirst())
-    XCTAssertThrowsError(try dropped.encode(to: encoder))
+    let firstDropped = Array(array.dropFirst())
+    XCTAssertThrowsError(try firstDropped.encode(to: encoder))
     expected.append(contentsOf: [
       0,0,0,0,0,0,0,3,
       0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
@@ -49,8 +49,20 @@ final class UnkeyedEncodingTest: XCTestCase {
       0,0,0,0,0,0,0,1,
     ])
 
-    let null: [Int]? = nil
-    XCTAssertThrowsError(try null.encode(to: encoder))
+    let nilArray: [Int]? = nil
+    XCTAssertThrowsError(try nilArray.encode(to: encoder))
+
+    do {
+      try nilArray.encode(to: encoder)
+    } catch let error as EncodingError {
+      if case let .invalidValue(value, context) = error {
+        XCTAssert(value is UInt8?)
+        XCTAssertNil(value as! UInt8?)
+        XCTAssertEqual(context.codingPath.map(\.debugDescription), encoder.codingPath.map(\.debugDescription))
+        XCTAssertEqual(context.debugDescription, "Encoding nil is not supported.")
+        XCTAssertNil(context.underlyingError)
+      }
+    }
   }
 
   func testBool() throws {

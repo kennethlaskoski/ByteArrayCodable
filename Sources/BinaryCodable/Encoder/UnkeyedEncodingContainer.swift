@@ -2,26 +2,27 @@
 //  SPDX-License-Identifier: MIT
 
 extension BinaryEncoder {
-  final class UnkeyedContainer: UnkeyedEncodingContainer {
+  final class UnkeyedContainer: EncodingContainer, UnkeyedEncodingContainer {
     private let encoder: BinaryEncoder
-    private let worker = EncodingWorker()
+    private let worker = Worker()
     private var buffer: [UInt8]
 
     var data: [UInt8] { buffer }
 
     init(encoder: BinaryEncoder) {
       self.encoder = encoder
-      self.buffer = worker.encode(0)
+      codingPath = encoder.codingPath
+      buffer = worker.encode(0)  // the buffer's head stores `count`
     }
 
 // MARK: - Encoding functions
 
     func encodeNil() throws {
       throw EncodingError.invalidValue(
-        Any.self,
+        UInt8?.none as Any,
         .init(
           codingPath: codingPath,
-          debugDescription: "Sorry, this encoder does not encode nil"
+          debugDescription: "Encoding nil is not supported."
         )
       )
     }
@@ -35,8 +36,10 @@ extension BinaryEncoder {
 
 // MARK: - Protocol implementation
 
-    var codingPath: [CodingKey] { [] }
+    var codingPath: [CodingKey]
 
+    // The count property is mapped
+    // to the buffer's head
     var count: Int {
       get {
         Int(bigEndian: buffer.withUnsafeBytes {
@@ -54,8 +57,12 @@ extension BinaryEncoder {
       fatalError("Keyed container not implemented.")
     }
 
+    var nested: [BinaryEncoder] = []
     func nestedUnkeyedContainer() -> UnkeyedEncodingContainer {
       fatalError("Unkeyed container not implemented.")
+//      let encoder = BinaryEncoder()
+//      nested.append(encoder)
+//      return encoder.unkeyedContainer()
     }
 
     func superEncoder() -> Encoder {

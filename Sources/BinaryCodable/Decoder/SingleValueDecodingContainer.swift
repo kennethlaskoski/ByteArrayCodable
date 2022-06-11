@@ -10,13 +10,12 @@ extension BinaryDecoder {
 
     init(decoder: BinaryDecoder) {
       self.decoder = decoder
+      codingPath = decoder.codingPath
     }
 
 // MARK: - Decoding functions
 
-    func decodeNil() -> Bool {
-      false
-    }
+    func decodeNil() -> Bool { false }
 
     func decode(_ type: Bool.Type) throws -> Bool {
       try decoder.buffer.withUnsafeBytes {
@@ -39,7 +38,17 @@ extension BinaryDecoder {
     }
 
     func decode(_ type: String.Type) throws -> String {
-      fatalError("Not implemented.")
+      decoder.buffer.withUnsafeBytes {
+        let head = $0.baseAddress!.advanced(by: decoder.offset)
+        var cursor = head.assumingMemoryBound(to: UInt8.self)
+        let result = String(cString: cursor)
+        while cursor.pointee != 0 {
+          decoder.offset += 1
+          cursor = cursor.advanced(by: 1)
+        }
+        decoder.offset += 1
+        return result
+      }
     }
 
     func decode(_ type: Double.Type) throws -> Double {
@@ -56,6 +65,6 @@ extension BinaryDecoder {
 
 // MARK: - Protocol implementation
 
-    public var codingPath: [CodingKey] { [] }
+    public var codingPath: [CodingKey]
   }
 }

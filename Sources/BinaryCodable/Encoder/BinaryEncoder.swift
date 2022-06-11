@@ -2,17 +2,10 @@
 //  SPDX-License-Identifier: MIT
 
 public final class BinaryEncoder: Encoder {
-  private var containers: [ContainerType] = []
+  private var containers: [EncodingContainer] = []
 
   public var data: [UInt8] {
-    containers.flatMap { (container: ContainerType) -> [UInt8] in
-      switch container {
-      case .unkeyed(let unkeyed):
-        return unkeyed.data
-      case .singleValue(let singleValue):
-        return singleValue.data
-      }
-    }
+    containers.flatMap { $0.data }
   }
 
   public var codingPath: [CodingKey] = []
@@ -24,20 +17,35 @@ public final class BinaryEncoder: Encoder {
 
   public func unkeyedContainer() -> UnkeyedEncodingContainer {
     let newContainer = UnkeyedContainer(encoder: self)
-    containers.append(.unkeyed(newContainer))
+    containers.append(newContainer)
     return newContainer
   }
 
   public func singleValueContainer() -> SingleValueEncodingContainer {
     let newContainer = SingleValueContainer(encoder: self)
-    containers.append(.singleValue(newContainer))
+    containers.append(newContainer)
     return newContainer
   }
 }
 
+protocol EncodingContainer {
+  var data: [UInt8] { get }
+}
+
 extension BinaryEncoder {
-  private enum ContainerType {
-    case unkeyed(UnkeyedContainer)
-    case singleValue(SingleValueContainer)
+  struct Worker {
+    func encode(_ value: Bool) -> [UInt8] {
+      [value ? 1 : 0]
+    }
+
+    func encode<T>(_ value: T) -> [UInt8]
+    where T: Encodable, T: FixedWidthInteger
+    {
+      withUnsafeBytes(of: value.bigEndian) { $0.map { $0 } }
+    }
+
+    func encode(_ value: String) -> [UInt8] {
+      value.utf8CString.flatMap { encode($0) }
+    }
   }
 }
