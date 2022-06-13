@@ -5,6 +5,13 @@ import XCTest
 @testable import BinaryCodable
 
 final class SingleValueDecodingTest: XCTestCase {
+  func testEmpty() {
+    let decoder = BinaryDecoder(data: [])
+    XCTAssertThrowsError(try Bool(from: decoder))
+    XCTAssertThrowsError(try Int(from: decoder))
+    XCTAssertThrowsError(try String(from: decoder))
+  }
+
   func testNil() throws {
     let decoder = BinaryDecoder(data: [])
     XCTAssertFalse(try decoder.singleValueContainer().decodeNil())
@@ -120,32 +127,35 @@ final class SingleValueDecodingTest: XCTestCase {
     XCTAssertEqual(try Float(from: decoder), (1.0 / 3.0))
   }
 
-//  func testRawRepresentable() throws {
-//    enum SomeRawEnum: Int, Encodable {
-//      case x
-//      case y
-//    }
-//
-//    try SomeRawEnum.x.encode(to: decoder)
-//    expected.append(contentsOf: [0,0,0,0,0,0,0,0])
-//
-//    try SomeRawEnum.y.encode(to: decoder)
-//    expected.append(contentsOf: [0,0,0,0,0,0,0,1])
-//  }
-//
-//  func testCustom() throws {
-//    struct Custom: Encodable {
-//      let x = 0
-//
-//      func encode(to encoder: Encoder) throws {
-//        var container = encoder.singleValueContainer()
-//        try container.encode(x)
-//      }
-//    }
-//
-//    let x = Custom()
-//    var container = decoder.singleValueContainer()
-//    try container.encode(x)
-//    expected.append(contentsOf: [0,0,0,0,0,0,0,0])
-//  }
+  func testRawRepresentable() throws {
+    enum SomeRawEnum: Int, Decodable {
+      case x
+      case y
+    }
+
+    let decoder = BinaryDecoder(data: [
+      0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,1,
+    ])
+    XCTAssertEqual(try SomeRawEnum(from: decoder), .x)
+    XCTAssertEqual(try SomeRawEnum(from: decoder), .y)
+  }
+
+  func testCustom() throws {
+    struct Custom: Decodable {
+      let x: Int
+
+      init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        x = try container.decode(Int.self)
+      }
+    }
+
+    let decoder = BinaryDecoder(data: [0,0,0,0,0,0,0,0])
+    let custom = try Custom(from: decoder)
+    XCTAssertEqual(custom.x, 0)
+
+    let container = try decoder.singleValueContainer()
+    XCTAssertThrowsError(try container.decode(Custom.self))
+  }
 }

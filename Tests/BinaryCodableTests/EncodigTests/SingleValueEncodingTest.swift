@@ -17,7 +17,7 @@ final class SingleValueEncodingTest: XCTestCase {
     XCTAssertEqual(encoder.data, expected)
   }
 
-  func testEmptyOnInit() {}
+  func testEmpty() {}
 
   func testNil() throws {
     let nilValue: Int? = nil

@@ -6,7 +6,7 @@ import Foundation
 extension BinaryDecoder {
   final class SingleValueContainer: SingleValueDecodingContainer {
     private let decoder: BinaryDecoder
-    private let worker = DecodingWorker()
+    private let worker = Worker()
 
     init(decoder: BinaryDecoder) {
       self.decoder = decoder
@@ -19,35 +19,29 @@ extension BinaryDecoder {
 
     func decode(_ type: Bool.Type) throws -> Bool {
       try decoder.buffer.withUnsafeBytes {
-        let cursor = $0.baseAddress!.advanced(by: decoder.offset)
-        let result = try worker.decode(Bool.self, cursor: cursor)
-        decoder.offset += 1
-        return result
+        guard let value = try? worker.decode(Bool.self, pointer: $0, offset: &decoder.offset) else {
+          throw DecodingError.dataCorruptedError(in: self, debugDescription: "Buffer overflow")
+        }
+        return value
       }
     }
 
     func decode<T>(_ type: T.Type) throws -> T
-    where T: Decodable, T: FixedWidthInteger
-    {
+    where T: Decodable, T: FixedWidthInteger {
       try decoder.buffer.withUnsafeBytes {
-        let cursor = $0.baseAddress!.advanced(by: decoder.offset)
-        let result = try worker.decode(T.self, cursor: cursor)
-        decoder.offset += MemoryLayout<T>.size
-        return result
+        guard let value = try? worker.decode(T.self, pointer: $0, offset: &decoder.offset) else {
+          throw DecodingError.dataCorruptedError(in: self, debugDescription: "Buffer overflow")
+        }
+        return value
       }
     }
 
     func decode(_ type: String.Type) throws -> String {
-      decoder.buffer.withUnsafeBytes {
-        let head = $0.baseAddress!.advanced(by: decoder.offset)
-        var cursor = head.assumingMemoryBound(to: UInt8.self)
-        let result = String(cString: cursor)
-        while cursor.pointee != 0 {
-          decoder.offset += 1
-          cursor = cursor.advanced(by: 1)
+      try decoder.buffer.withUnsafeBytes {
+        guard let value = try? worker.decode(String.self, pointer: $0, offset: &decoder.offset) else {
+          throw DecodingError.dataCorruptedError(in: self, debugDescription: "Buffer overflow")
         }
-        decoder.offset += 1
-        return result
+        return value
       }
     }
 
