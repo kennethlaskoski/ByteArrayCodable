@@ -2,17 +2,14 @@
 //  SPDX-License-Identifier: MIT
 
 extension ByteArrayEncoder._ByteArrayEncoder {
-  final class SingleValueContainer: EncodingContainer, SingleValueEncodingContainer {
-    private let worker = Worker()
+  final class SingleValueContainer: SingleValueEncodingContainer {
     private var buffer: [UInt8] = []
-
-    var data: [UInt8] { buffer }
 
     init(codingPath: [CodingKey]) {
       self.codingPath = codingPath
     }
 
-    // MARK: - Encoding functions
+    // MARK: - Protocol functions
 
     func encodeNil() throws {
       throw EncodingError.invalidValue(
@@ -25,18 +22,18 @@ extension ByteArrayEncoder._ByteArrayEncoder {
     }
 
     func encode(_ value: Bool) {
-      let bytes = worker.encode(value)
+      let bytes = Worker.encode(value)
       buffer.append(contentsOf: bytes)
     }
 
     func encode<T>(_ value: T)
     where T: Encodable, T: FixedWidthInteger {
-      let bytes = worker.encode(value)
+      let bytes = Worker.encode(value)
       buffer.append(contentsOf: bytes)
     }
 
     func encode(_ value: String) {
-      let bytes = worker.encode(value)
+      let bytes = Worker.encode(value)
       buffer.append(contentsOf: bytes)
     }
 
@@ -54,30 +51,35 @@ extension ByteArrayEncoder._ByteArrayEncoder {
       buffer.append(contentsOf: try encoder.encode(value))
     }
 
-    // MARK: - Protocol implementation
+    // MARK: - Protocol properties
 
     var codingPath: [CodingKey]
   }
 }
 
+// MARK: - EncodingContainer implementation
+extension ByteArrayEncoder._ByteArrayEncoder.SingleValueContainer: EncodingContainer {
+  var data: [UInt8] { buffer }
+}
+
 // MARK: - Value encoding utility
 extension ByteArrayEncoder._ByteArrayEncoder.SingleValueContainer {
   @usableFromInline @frozen
-  struct Worker {
+  enum Worker {
 
     @inlinable
-    func encode(_ value: Bool) -> [UInt8] {
+    static func encode(_ value: Bool) -> [UInt8] {
       [value ? 1 : 0]
     }
 
     @inlinable
-    func encode<T>(_ value: T) -> [UInt8]
+    static func encode<T>(_ value: T) -> [UInt8]
     where T: Encodable, T: FixedWidthInteger {
       withUnsafeBytes(of: value.bigEndian) { $0.map { $0 } }
     }
 
     @inlinable
-    func encode(_ value: String) -> [UInt8] {
+    static func encode(_ value: String) -> [UInt8] {
       value.utf8CString.flatMap { encode($0) }
     }
   }

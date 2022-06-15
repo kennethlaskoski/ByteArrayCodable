@@ -2,17 +2,15 @@
 //  SPDX-License-Identifier: MIT
 
 extension ByteArrayEncoder._ByteArrayEncoder {
-  final class UnkeyedContainer: EncodingContainer, UnkeyedEncodingContainer {
+  final class UnkeyedContainer: UnkeyedEncodingContainer {
     var containers: [EncodingContainer] = []
-    var data: [UInt8] {
-      try! ByteArrayEncoder().encode(count) + containers.flatMap { $0.data }
-    }
 
     init(codingPath: [CodingKey]) {
       self.codingPath = codingPath
     }
 
-    // MARK: - Encoding functions
+    // MARK: - Protocol functions
+    // MARK: Encoding
 
     func encodeNil() throws {
       var container = nestedSingleValueContainer()
@@ -25,28 +23,24 @@ extension ByteArrayEncoder._ByteArrayEncoder {
       try container.encode(value)
     }
 
-    // MARK: - Protocol implementation
+    // MARK: Nested containers
 
-    var codingPath: [CodingKey]
-
-    var count: Int { containers.count }
-
-    func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type) -> KeyedEncodingContainer<
-      NestedKey
-    > where NestedKey: CodingKey {
-      let container = KeyedContainer<NestedKey>(codingPath: nestedCodingPath)
+    func nestedContainer<NestedKey>(
+      keyedBy keyType: NestedKey.Type
+    ) -> KeyedEncodingContainer<NestedKey> where NestedKey: CodingKey {
+      let container = KeyedContainer<NestedKey>(codingPath: nestedCodingPath())
       containers.append(container)
       return KeyedEncodingContainer(container)
     }
 
     func nestedUnkeyedContainer() -> UnkeyedEncodingContainer {
-      let container = UnkeyedContainer(codingPath: nestedCodingPath)
+      let container = UnkeyedContainer(codingPath: nestedCodingPath())
       containers.append(container)
       return container
     }
 
     func nestedSingleValueContainer() -> SingleValueEncodingContainer {
-      let container = SingleValueContainer(codingPath: nestedCodingPath)
+      let container = SingleValueContainer(codingPath: nestedCodingPath())
       containers.append(container)
       return container
     }
@@ -54,9 +48,23 @@ extension ByteArrayEncoder._ByteArrayEncoder {
     func superEncoder() -> Encoder {
       fatalError("Super encoder not implemented.")
     }
+
+    // MARK: - Protocol properties
+
+    var codingPath: [CodingKey]
+
+    var count: Int { containers.count }
   }
 }
 
+// MARK: - EncodingContainer implementation
+extension ByteArrayEncoder._ByteArrayEncoder.UnkeyedContainer: EncodingContainer {
+  var data: [UInt8] {
+    try! ByteArrayEncoder().encode(count) + containers.flatMap { $0.data }
+  }
+}
+
+// MARK: - Nesting utility
 extension ByteArrayEncoder._ByteArrayEncoder.UnkeyedContainer {
   struct Index: CodingKey {
     var intValue: Int?
@@ -66,7 +74,7 @@ extension ByteArrayEncoder._ByteArrayEncoder.UnkeyedContainer {
     init?(stringValue: String) { nil }
   }
 
-  private var nestedCodingPath: [CodingKey] {
+  private func nestedCodingPath() -> [CodingKey] {
     codingPath + [Index(intValue: count)!]
   }
 }
