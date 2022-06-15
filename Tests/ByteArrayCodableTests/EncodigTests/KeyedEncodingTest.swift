@@ -5,7 +5,7 @@
 //@testable import BinaryCodable
 //
 //final class KeyedEncodingTest: XCTestCase {
-//  var encoder: BinaryEncoder!
+//  var encoder: _BinaryEncoder!
 //  var expected: [UInt8] = []
 //
 //  override func setUp() {

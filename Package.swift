@@ -3,22 +3,22 @@
 import PackageDescription
 
 let package = Package(
-  name: "BinaryCodable",
+  name: "ByteArrayCodable",
   products: [
     .library(
-      name: "BinaryCodable",
-      targets: ["BinaryCodable"]
+      name: "ByteArrayCodable",
+      targets: ["ByteArrayCodable"]
     ),
   ],
   dependencies: [],
   targets: [
     .target(
-      name: "BinaryCodable",
+      name: "ByteArrayCodable",
       dependencies: []
     ),
     .testTarget(
-      name: "BinaryCodableTests",
-      dependencies: ["BinaryCodable"]
+      name: "ByteArrayCodableTests",
+      dependencies: ["ByteArrayCodable"]
     ),
   ]
 )

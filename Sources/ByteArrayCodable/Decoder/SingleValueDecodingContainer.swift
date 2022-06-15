@@ -3,12 +3,12 @@
 
 import Foundation
 
-extension BinaryDecoder {
+extension ByteArrayDecoder {
   final class SingleValueContainer: SingleValueDecodingContainer {
-    private let decoder: BinaryDecoder
+    private let decoder: ByteArrayDecoder
     private let worker = Worker()
 
-    init(decoder: BinaryDecoder) {
+    init(decoder: ByteArrayDecoder) {
       self.decoder = decoder
       codingPath = decoder.codingPath
     }

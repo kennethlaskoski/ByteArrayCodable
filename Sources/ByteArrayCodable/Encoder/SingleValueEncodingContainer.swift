@@ -1,17 +1,15 @@
 //  Copyright Kenneth Laskoski. All Rights Reserved.
 //  SPDX-License-Identifier: MIT
 
-extension BinaryEncoder {
+extension ByteArrayEncoder._ByteArrayEncoder {
   final class SingleValueContainer: EncodingContainer, SingleValueEncodingContainer {
-    private let encoder: BinaryEncoder
     private let worker = Worker()
     private var buffer: [UInt8] = []
 
     var data: [UInt8] { buffer }
 
-    init(encoder: BinaryEncoder) {
-      self.encoder = encoder
-      codingPath = encoder.codingPath
+    init(codingPath: [CodingKey]) {
+      self.codingPath = codingPath
     }
 
 // MARK: - Encoding functions
@@ -54,7 +52,8 @@ extension BinaryEncoder {
     func encode<T>(_ value: T) throws
     where T : Encodable
     {
-      try value.encode(to: encoder)
+      let encoder = ByteArrayEncoder()
+      buffer.append(contentsOf: try encoder.encode(value))
     }
 
 // MARK: - Protocol implementation

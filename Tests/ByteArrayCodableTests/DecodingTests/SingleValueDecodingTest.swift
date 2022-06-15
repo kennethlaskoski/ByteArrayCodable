@@ -2,29 +2,29 @@
 //  SPDX-License-Identifier: MIT
 
 import XCTest
-@testable import BinaryCodable
+@testable import ByteArrayCodable
 
 final class SingleValueDecodingTest: XCTestCase {
   func testEmpty() {
-    let decoder = BinaryDecoder(data: [])
+    let decoder = ByteArrayDecoder(data: [])
     XCTAssertThrowsError(try Bool(from: decoder))
     XCTAssertThrowsError(try Int(from: decoder))
     XCTAssertThrowsError(try String(from: decoder))
   }
 
   func testNil() throws {
-    let decoder = BinaryDecoder(data: [])
+    let decoder = ByteArrayDecoder(data: [])
     XCTAssertFalse(try decoder.singleValueContainer().decodeNil())
   }
 
   func testBool() throws {
-    let decoder = BinaryDecoder(data: [1,0])
+    let decoder = ByteArrayDecoder(data: [1,0])
     XCTAssert(try Bool(from: decoder))
     XCTAssertFalse(try Bool(from: decoder))
   }
 
   func testString() throws {
-    let decoder = BinaryDecoder(data: [
+    let decoder = ByteArrayDecoder(data: [
       0,
       0x48,0x65,0x6c,0x6c,0x6f,0,
       0xe4,0xbd,0xa0,0xe5,0xa5,0xbd,0,
@@ -35,7 +35,7 @@ final class SingleValueDecodingTest: XCTestCase {
   }
 
   func testInt() throws {
-    let decoder = BinaryDecoder(data: [
+    let decoder = ByteArrayDecoder(data: [
       0x80,0,0,0,0,0,0,0,
       0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
       0,0,0,0,0,0,0,0,
@@ -50,7 +50,7 @@ final class SingleValueDecodingTest: XCTestCase {
   }
 
   func testDouble() throws {
-    let decoder = BinaryDecoder(data: [
+    let decoder = ByteArrayDecoder(data: [
       0,0,0,0,0,0,0,0,
       0x7f,0xf8,0,0,0,0,0,0,
       0x7f,0xf4,0,0,0,0,0,0,
@@ -89,7 +89,7 @@ final class SingleValueDecodingTest: XCTestCase {
   }
 
   func testFloat() throws {
-    let decoder = BinaryDecoder(data: [
+    let decoder = ByteArrayDecoder(data: [
       0,0,0,0,
       0x7f,0xc0,0,0,
       0x7f,0xa0,0,0,
@@ -133,7 +133,7 @@ final class SingleValueDecodingTest: XCTestCase {
       case y
     }
 
-    let decoder = BinaryDecoder(data: [
+    let decoder = ByteArrayDecoder(data: [
       0,0,0,0,0,0,0,0,
       0,0,0,0,0,0,0,1,
     ])
@@ -151,7 +151,7 @@ final class SingleValueDecodingTest: XCTestCase {
       }
     }
 
-    let decoder = BinaryDecoder(data: [0,0,0,0,0,0,0,0])
+    let decoder = ByteArrayDecoder(data: [0,0,0,0,0,0,0,0])
     let custom = try Custom(from: decoder)
     XCTAssertEqual(custom.x, 0)
 

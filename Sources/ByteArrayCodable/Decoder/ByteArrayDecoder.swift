@@ -1,7 +1,7 @@
 //  Copyright Kenneth Laskoski. All Rights Reserved.
 //  SPDX-License-Identifier: MIT
 
-public class BinaryDecoder: Decoder {
+public class ByteArrayDecoder: Decoder {
   let buffer: [UInt8]
   var offset: Int = 0
 
@@ -26,7 +26,7 @@ public class BinaryDecoder: Decoder {
   }
 }
 
-extension BinaryDecoder {
+extension ByteArrayDecoder {
   struct OverflowError: Error {
 
   }
