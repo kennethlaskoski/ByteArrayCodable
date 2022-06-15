@@ -2,7 +2,7 @@
 //  SPDX-License-Identifier: MIT
 
 public final class ByteArrayEncoder {
-  // TODO: Swift 5.7
+  // WAIT: Swift 5.7
   // public func encode(_ value: some Encodable) throws -> [UInt8] {
   public func encode<T: Encodable>(_ value: T) throws -> [UInt8] {
     let encoder = _ByteArrayEncoder()
@@ -10,11 +10,6 @@ public final class ByteArrayEncoder {
     return encoder.data
   }
 }
-
-#if canImport(Combine)
-import Combine
-extension ByteArrayEncoder: TopLevelEncoder {}
-#endif
 
 protocol EncodingContainer {
   var data: [UInt8] { get }
@@ -29,7 +24,7 @@ extension ByteArrayEncoder {
     }
 
     public var codingPath: [CodingKey] = []
-    public var userInfo: [CodingUserInfoKey : Any] = [:]
+    public var userInfo: [CodingUserInfoKey: Any] = [:]
 
     public func container<Key: CodingKey>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> {
       let container = KeyedContainer<Key>(codingPath: codingPath)
@@ -51,20 +46,7 @@ extension ByteArrayEncoder {
   }
 }
 
-extension ByteArrayEncoder._ByteArrayEncoder {
-  struct Worker {
-    func encode(_ value: Bool) -> [UInt8] {
-      [value ? 1 : 0]
-    }
-
-    func encode<T>(_ value: T) -> [UInt8]
-    where T: Encodable, T: FixedWidthInteger
-    {
-      withUnsafeBytes(of: value.bigEndian) { $0.map { $0 } }
-    }
-
-    func encode(_ value: String) -> [UInt8] {
-      value.utf8CString.flatMap { encode($0) }
-    }
-  }
-}
+#if canImport(Combine)
+import Combine
+extension ByteArrayEncoder: TopLevelEncoder {}
+#endif

@@ -3,43 +3,37 @@
 
 extension ByteArrayEncoder._ByteArrayEncoder {
   final class UnkeyedContainer: EncodingContainer, UnkeyedEncodingContainer {
-
     var containers: [EncodingContainer] = []
     var data: [UInt8] {
-      try! ByteArrayEncoder().encode(count) +
-      containers.flatMap { $0.data }
+      try! ByteArrayEncoder().encode(count) + containers.flatMap { $0.data }
     }
 
     init(codingPath: [CodingKey]) {
       self.codingPath = codingPath
     }
 
-// MARK: - Encoding functions
+    // MARK: - Encoding functions
 
     func encodeNil() throws {
-      throw EncodingError.invalidValue(
-        UInt8?.none as Any,
-        .init(
-          codingPath: codingPath,
-          debugDescription: "Encoding nil is not supported."
-        )
-      )
+      var container = nestedSingleValueContainer()
+      try container.encodeNil()
     }
 
     func encode<T>(_ value: T) throws
-    where T : Encodable
-    {
+    where T: Encodable {
       var container = nestedSingleValueContainer()
       try container.encode(value)
     }
 
-// MARK: - Protocol implementation
+    // MARK: - Protocol implementation
 
     var codingPath: [CodingKey]
 
     var count: Int { containers.count }
 
-    func nestedContainer<NestedKey: CodingKey>(keyedBy keyType: NestedKey.Type) -> KeyedEncodingContainer<NestedKey> {
+    func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type) -> KeyedEncodingContainer<
+      NestedKey
+    > where NestedKey: CodingKey {
       let container = KeyedContainer<NestedKey>(codingPath: nestedCodingPath)
       containers.append(container)
       return KeyedEncodingContainer(container)
@@ -66,18 +60,13 @@ extension ByteArrayEncoder._ByteArrayEncoder {
 extension ByteArrayEncoder._ByteArrayEncoder.UnkeyedContainer {
   struct Index: CodingKey {
     var intValue: Int?
-    var stringValue: String {
-      return "\(self.intValue!)"
-    }
-    init?(intValue: Int) {
-      self.intValue = intValue
-    }
-    init?(stringValue: String) {
-      return nil
-    }
+    var stringValue: String { "\(intValue!)" }
+
+    init?(intValue: Int) { self.intValue = intValue }
+    init?(stringValue: String) { nil }
   }
 
   private var nestedCodingPath: [CodingKey] {
-    codingPath + [Index(intValue: self.count)!]
+    codingPath + [Index(intValue: count)!]
   }
 }

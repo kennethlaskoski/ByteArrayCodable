@@ -12,7 +12,7 @@ extension ByteArrayEncoder._ByteArrayEncoder {
       self.codingPath = codingPath
     }
 
-// MARK: - Encoding functions
+    // MARK: - Encoding functions
 
     func encodeNil() throws {
       throw EncodingError.invalidValue(
@@ -30,8 +30,7 @@ extension ByteArrayEncoder._ByteArrayEncoder {
     }
 
     func encode<T>(_ value: T)
-    where T: Encodable, T: FixedWidthInteger
-    {
+    where T: Encodable, T: FixedWidthInteger {
       let bytes = worker.encode(value)
       buffer.append(contentsOf: bytes)
     }
@@ -50,14 +49,36 @@ extension ByteArrayEncoder._ByteArrayEncoder {
     }
 
     func encode<T>(_ value: T) throws
-    where T : Encodable
-    {
+    where T: Encodable {
       let encoder = ByteArrayEncoder()
       buffer.append(contentsOf: try encoder.encode(value))
     }
 
-// MARK: - Protocol implementation
+    // MARK: - Protocol implementation
 
     var codingPath: [CodingKey]
+  }
+}
+
+// MARK: - Value encoding utility
+extension ByteArrayEncoder._ByteArrayEncoder.SingleValueContainer {
+  @usableFromInline @frozen
+  struct Worker {
+
+    @inlinable
+    func encode(_ value: Bool) -> [UInt8] {
+      [value ? 1 : 0]
+    }
+
+    @inlinable
+    func encode<T>(_ value: T) -> [UInt8]
+    where T: Encodable, T: FixedWidthInteger {
+      withUnsafeBytes(of: value.bigEndian) { $0.map { $0 } }
+    }
+
+    @inlinable
+    func encode(_ value: String) -> [UInt8] {
+      value.utf8CString.flatMap { encode($0) }
+    }
   }
 }
