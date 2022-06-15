@@ -168,4 +168,17 @@ final class UnkeyedEncodingTest: XCTestCase {
       ]
     )
   }
+
+  func testCustom() throws {
+    struct Custom: Encodable {
+      let x: [Int]? = nil
+
+      func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encodeNil()
+      }
+    }
+
+    XCTAssertThrowsError(try encoder.encode(Custom()))
+  }
 }
