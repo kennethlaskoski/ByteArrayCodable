@@ -1,3 +1,3 @@
-# BinaryCodable
+# ByteArrayCodable
 
-Swift Codable for binary representions.
+Swift Codable for flat byte arrays.
