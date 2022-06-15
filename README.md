@@ -1,3 +1,3 @@
 # ByteArrayCodable
 
-Swift Codable for flat byte arrays.
+Swift Codable to/from flat byte arrays.
