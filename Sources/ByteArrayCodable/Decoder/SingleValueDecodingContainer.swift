@@ -1,8 +1,6 @@
 //  Copyright Kenneth Laskoski. All Rights Reserved.
 //  SPDX-License-Identifier: MIT
 
-import Foundation
-
 extension ByteArrayDecoder {
   final class SingleValueContainer: SingleValueDecodingContainer {
     private let decoder: ByteArrayDecoder
@@ -57,7 +55,7 @@ extension ByteArrayDecoder {
       try T(from: decoder)
     }
 
-// MARK: - Protocol implementation
+// MARK: - Protocol properties
 
     public var codingPath: [CodingKey]
   }
