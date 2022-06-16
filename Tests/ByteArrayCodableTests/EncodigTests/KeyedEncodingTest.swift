@@ -1,204 +1,51 @@
 //  Copyright Kenneth Laskoski. All Rights Reserved.
 //  SPDX-License-Identifier: MIT
 
-//import XCTest
-//@testable import BinaryCodable
-//
-//final class KeyedEncodingTest: XCTestCase {
-//  var encoder: _BinaryEncoder!
-//  var expected: [UInt8] = []
-//
-//  override func setUp() {
-//    encoder = BinaryEncoder()
-//    expected = []
-//  }
-//
-//  override func tearDown() {
-//    XCTAssertEqual(encoder.flatData, expected)
-//  }
+import XCTest
+@testable import ByteArrayCodable
 
-//  func testCreateEmpty() {}
-//
-//  func testNil() throws {
-//    let null: Int? = nil
-//    try null.encode(to: encoder)
-//    expected.append(contentsOf: [0x3f,0x21,0xff])
-//  }
-//
-//  func testBool() throws {
-//    try true.encode(to: encoder)
-//    expected.append(1)
-//
-//    try false.encode(to: encoder)
-//    expected.append(0)
-//  }
-//
-//  func testString() throws {
-//    try "".encode(to: encoder)
-//    expected.append(0)
-//
-//    try "Hello".encode(to: encoder)
-//    expected.append(contentsOf: [0x48,0x65,0x6c,0x6c,0x6f,0])
-//
-//    try "你好".encode(to: encoder)
-//    expected.append(contentsOf: [0xe4,0xbd,0xa0,0xe5,0xa5,0xbd,0])
-//  }
-//
-//  func testInt() throws {
-//    try 0.encode(to: encoder)
-//    expected.append(contentsOf: [0,0,0,0,0,0,0,0])
-//
-//    try 1.encode(to: encoder)
-//    expected.append(contentsOf: [0,0,0,0,0,0,0,1])
-//
-//    try (-1).encode(to: encoder)
-//    expected.append(contentsOf: [0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff])
-//
-//    try Int.max.encode(to: encoder)
-//    expected.append(contentsOf: [0x7f,0xff,0xff,0xff,0xff,0xff,0xff,0xff])
-//
-//    try Int.min.encode(to: encoder)
-//    expected.append(contentsOf: [0x80,0,0,0,0,0,0,0])
-//  }
-//
-//  func testDouble() throws {
-//    try Double.zero.encode(to: encoder)
-//    expected.append(contentsOf: [0,0,0,0,0,0,0,0])
-//
-//    try Double.pi.encode(to: encoder)
-//    expected.append(contentsOf: [0x40,0x09,0x21,0xfb,0x54,0x44,0x2d,0x18])
-//
-//    try Double.ulpOfOne.encode(to: encoder)
-//    expected.append(contentsOf: [0x3c,0xb0,0,0,0,0,0,0])
-//
-//    try Double.leastNonzeroMagnitude.encode(to: encoder)
-//    expected.append(contentsOf: [0,0,0,0,0,0,0,1])
-//
-//    try Double.leastNormalMagnitude.encode(to: encoder)
-//    expected.append(contentsOf: [0,0x10,0,0,0,0,0,0])
-//
-//    try Double.greatestFiniteMagnitude.encode(to: encoder)
-//    expected.append(contentsOf: [0x7f,0xef,0xff,0xff,0xff,0xff,0xff,0xff])
-//
-//    try Double.infinity.encode(to: encoder)
-//    expected.append(contentsOf: [0x7f,0xf0,0,0,0,0,0,0])
-//
-//    try Double.nan.encode(to: encoder)
-//    expected.append(contentsOf: [0x7f,0xf8,0,0,0,0,0,0])
-//
-//    try Double.signalingNaN.encode(to: encoder)
-//    expected.append(contentsOf: [0x7f,0xf4,0,0,0,0,0,0])
-//
-//    try 0.0.encode(to: encoder)
-//    expected.append(contentsOf: [0,0,0,0,0,0,0,0])
-//
-//    try (-0.0).encode(to: encoder)
-//    expected.append(contentsOf: [0x80,0,0,0,0,0,0,0])
-//
-//    try 1.0.encode(to: encoder)
-//    expected.append(contentsOf: [0x3f,0xf0,0,0,0,0,0,0])
-//
-//    try (-1.0).encode(to: encoder)
-//    expected.append(contentsOf: [0xbf,0xf0,0,0,0,0,0,0])
-//
-//    try (1.0 + .ulpOfOne).encode(to: encoder)
-//    expected.append(contentsOf: [0x3f,0xf0,0,0,0,0,0,1])
-//
-//    try 2.0.encode(to: encoder)
-//    expected.append(contentsOf: [0x40,0,0,0,0,0,0,0])
-//
-//    try (-2.0).encode(to: encoder)
-//    expected.append(contentsOf: [0xc0,0,0,0,0,0,0,0])
-//
-//    try (1.0 / 3.0).encode(to: encoder)
-//    expected.append(contentsOf: [0x3f,0xd5,0x55,0x55,0x55,0x55,0x55,0x55])
-//  }
-//
-//  func testFloat() throws {
-//    try Float.zero.encode(to: encoder)
-//    expected.append(contentsOf: [0,0,0,0])
-//
-//    try Float.pi.encode(to: encoder)
-//    expected.append(contentsOf: [0x40,0x49,0x0f,0xda])
-//
-//    try Float.ulpOfOne.encode(to: encoder)
-//    expected.append(contentsOf: [0x34,0,0,0])
-//
-//    try Float.leastNonzeroMagnitude.encode(to: encoder)
-//    expected.append(contentsOf: [0,0,0,1])
-//
-//    try Float.leastNormalMagnitude.encode(to: encoder)
-//    expected.append(contentsOf: [0,0x80,0,0])
-//
-//    try Float.greatestFiniteMagnitude.encode(to: encoder)
-//    expected.append(contentsOf: [0x7f,0x7f,0xff,0xff])
-//
-//    try Float.infinity.encode(to: encoder)
-//    expected.append(contentsOf: [0x7f,0x80,0,0])
-//
-//    try Float.nan.encode(to: encoder)
-//    expected.append(contentsOf: [0x7f,0xc0,0,0])
-//
-//    try Float.signalingNaN.encode(to: encoder)
-//    expected.append(contentsOf: [0x7f,0xa0,0,0])
-//
-//    try Float(0.0).encode(to: encoder)
-//    expected.append(contentsOf: [0,0,0,0])
-//
-//    try Float(-0.0).encode(to: encoder)
-//    expected.append(contentsOf: [0x80,0,0,0])
-//
-//    try Float(1.0).encode(to: encoder)
-//    expected.append(contentsOf: [0x3f,0x80,0,0])
-//
-//    try Float(-1.0).encode(to: encoder)
-//    expected.append(contentsOf: [0xbf,0x80,0,0])
-//
-//    try (Float(1.0) + .ulpOfOne).encode(to: encoder)
-//    expected.append(contentsOf: [0x3f,0x80,0,1])
-//
-//    try Float(2.0).encode(to: encoder)
-//    expected.append(contentsOf: [0x40,0,0,0])
-//
-//    try Float(-2.0).encode(to: encoder)
-//    expected.append(contentsOf: [0xc0,0,0,0])
-//
-//    try (Float(1.0) / Float(3.0)).encode(to: encoder)
-//    expected.append(contentsOf: [0x3e,0xaa,0xaa,0xab])
-//  }
-//
-//  func testRawRepresentable() throws {
-//    enum SomeRawEnum: Int, Encodable {
-//      case x
-//      case y
-//    }
-//
-//    try SomeRawEnum.x.encode(to: encoder)
-//    expected.append(contentsOf: [0,0,0,0,0,0,0,0])
-//
-//    try SomeRawEnum.y.encode(to: encoder)
-//    expected.append(contentsOf: [0,0,0,0,0,0,0,1])
-//  }
+final class KeyedEncodingTest: XCTestCase {
+  let encoder = ByteArrayEncoder()
 
-//  func testsEnum throws {
-//    enum SomeEnum: Codable {
-//      case x
-//      case y
-//    }
-//
-//    try encoder.encode(someEnum.x)
-//  }
+  func testEmpty() throws {
+    let empty: [Int: Int] = [:]
+    XCTAssertEqual(try encoder.encode(empty), [0,0,0,0,0,0,0,0])
+  }
 
-//  func testStruct() throws {
-//    struct SomeStruct: Encodable {
-//      let x = 0
-//      let y = 1
-//    }
-//    let someStruct = SomeStruct()
-//
-//    XCTExpectFailure()
-//    try encoder.encode(someStruct)
-//    expected.append(contentsOf: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1])
-//    XCTAssertEqual(encoder.data, expected)
-//  }
-//}
+  func testDictionary() throws {
+    XCTAssertEqual(
+      try encoder.encode(
+        [
+          2: false,
+          7: true,
+        ]
+      ),
+      [
+        0,0,0,0,0,0,0,2,
+        0x32,0,0,
+        0x37,0,1,
+      ]
+    )
+  }
+
+  func testStruct() throws {
+    struct EncodableStruct: Encodable {
+      let int: Int = 0
+      let double: Double = .pi
+      let string: String = "Hello"
+    }
+
+    XCTAssertEqual(
+      try encoder.encode(EncodableStruct()),
+      [
+        0,0,0,0,0,0,0,3,
+        0x64,0x6f,0x75,0x62,0x6c,0x65,0,
+        0x40,0x09,0x21,0xfb,0x54,0x44,0x2d,0x18,
+        0x69,0x6e,0x74,0,
+        0,0,0,0,0,0,0,0,
+        0x73,0x74,0x72,0x69,0x6e,0x67,0,
+        0x48,0x65,0x6c,0x6c,0x6f,0,
+      ]
+    )
+  }
+}

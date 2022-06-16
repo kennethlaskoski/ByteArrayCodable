@@ -65,7 +65,7 @@ extension ByteArrayEncoder._ByteArrayEncoder.KeyedContainer: EncodingContainer {
   var data: [UInt8] {
     var buffer: [UInt8] = []
     buffer.append(contentsOf: try! ByteArrayEncoder().encode(containers.count))
-    for (key, container) in containers {
+    for (key, container) in containers.sorted( by: { $0.0 < $1.0 }) {
       buffer.append(contentsOf: try! ByteArrayEncoder().encode(key))
       buffer.append(contentsOf: container.data)
     }
