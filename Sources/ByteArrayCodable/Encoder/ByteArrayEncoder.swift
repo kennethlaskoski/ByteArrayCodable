@@ -9,6 +9,8 @@ public final class ByteArrayEncoder {
     try value.encode(to: encoder)
     return encoder.data
   }
+
+  public init() {}
 }
 
 protocol EncodingContainer {
